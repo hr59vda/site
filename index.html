@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire de téléchargement d'images</title>
+</head>
+<body>
+  <h1>Télécharger une image</h1>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="photo" accept="image/*">
+    <button type="submit">Télécharger</button>
+  </form>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      
+      const formData = new FormData();
+      formData.append('photo', event.target.photo.files[0]);
+      
+      try {
+        const response = await fetch('https://api.github.com/repos/hr59vda/site/contents/images/' + event.target.photo.files[0].name, {
+          method: 'PUT',
+          headers: {
+            'Authorization': 'token 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',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: 'Ajout d\'une image',
+            content: formData.get('photo').toString('base64')
+          })
+        });
+
+        if (response.ok) {
+          alert('Image téléchargée avec succès !');
+          location.reload(); // Recharger la page pour afficher les nouvelles images
+        } else {
+          alert('Une erreur s\'est produite lors du téléchargement de l\'image.');
+        }
+      } catch (error) {
+        console.error('Erreur lors du téléchargement de l\'image :', error);
+        alert('Une erreur s\'est produite lors du téléchargement de l\'image.');
+      }
+    });
+  </script>
+</body>
+</html>
+
